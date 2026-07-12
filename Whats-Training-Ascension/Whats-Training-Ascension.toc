@@ -1,0 +1,21 @@
+## Interface: 30300
+## Title: What's Training? Ascension
+## Notes: Server-agnostic What's Training? (identical UI/UX) that learns only from trainers
+## Author: ZythDr
+## Version: 1.0.2
+## SavedVariables: WT_AscensionAccountDB
+## SavedVariablesPerCharacter: WT_AscensionCharDB
+
+# Load order matters
+Localization.lua
+Utils.lua
+DB.lua
+Main.lua
+UI.lua
+Scanner.lua
+Announce.lua
+
+# Assets
+# res/highlight
+# res/left
+# res/right
