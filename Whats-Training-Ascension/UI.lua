@@ -14,8 +14,6 @@ end
 -- Build texture paths dynamically from the actual addon folder name
 local ADDON_PATH = "Interface\\AddOns\\" .. ADDON_NAME .. "\\"
 local HIGHLIGHT_TEXTURE_PATH = ADDON_PATH .. "res\\highlight"
-local LEFT_BG_TEXTURE_PATH   = ADDON_PATH .. "res\\left"
-local RIGHT_BG_TEXTURE_PATH  = ADDON_PATH .. "res\\right"
 local TAB_TEXTURE_PATH       = "Interface\\Icons\\INV_Misc_QuestionMark"
 
 -- Use the global GameTooltip for maximum compatibility
@@ -263,25 +261,18 @@ function wt.CreateFrame()
     mainFrame._initialized = true
     mainFrame:SetPoint("TOPLEFT", SPELLBOOK.Content, "TOPLEFT", 0, 0)
     mainFrame:SetPoint("BOTTOMRIGHT", SPELLBOOK.Content, "BOTTOMRIGHT", 0, 0)
-    mainFrame:SetFrameStrata("HIGH")
-    mainFrame:Hide()
+	mainFrame:SetFrameStrata("TOOLTIP")   -- above ModernSpellBook
+	mainFrame:SetFrameLevel(50)           -- above any child frames
+	mainFrame:Hide()
 
     -- ----------------------------------------------------------
     -- Background: left fixed width, right stretches to fill gap
     -- ----------------------------------------------------------
-    local left = mainFrame:CreateTexture(nil, "ARTWORK")
-    left:SetTexture(LEFT_BG_TEXTURE_PATH)
-    left:SetWidth(256)
-    left:SetPoint("TOPLEFT", mainFrame)
-    left:SetPoint("BOTTOMLEFT", mainFrame)
-
-    local right = mainFrame:CreateTexture(nil, "ARTWORK")
-    right:SetTexture(RIGHT_BG_TEXTURE_PATH)
-    right:SetPoint("TOPLEFT", left, "TOPRIGHT")
-    right:SetPoint("BOTTOMLEFT", left, "BOTTOMRIGHT")
-    right:SetPoint("TOPRIGHT", mainFrame, "TOPRIGHT")
-    right:SetPoint("BOTTOMRIGHT", mainFrame, "BOTTOMRIGHT")
-    -- No width set – it will stretch horizontally
+	-- Solid, fully opaque black background (no transparency, no texture stretching)
+	local blackBg = mainFrame:CreateTexture(nil, "BACKGROUND")
+	blackBg:SetAllPoints(mainFrame)
+	blackBg:SetTexture(0, 0, 0)  -- RGB: pure black
+	blackBg:SetAlpha(1)          -- fully opaque
 
     -- Scrollable content container
     local content = CreateFrame("Frame", "$parentContent", mainFrame)
@@ -362,10 +353,11 @@ function wt.CreateFrame()
         spellLabel:SetJustifyH("LEFT")
 
         local spellLevelLabel = spell:CreateFontString("$parentLevelLabel", "OVERLAY", "GameFontWhite")
-        spellLevelLabel:SetPoint("RIGHT", content, "RIGHT", -20, 0)
-        spellLevelLabel:SetPoint("TOP", row, "TOP", 0, 0)
-        spellLevelLabel:SetPoint("BOTTOM", row, "BOTTOM", 0, 0)
-        spellLevelLabel:SetJustifyH("RIGHT")
+		-- Anchor to a fixed horizontal position (380px from left) so ModernSpellBook's resizing doesn't push it right
+		spellLevelLabel:SetPoint("LEFT", content, "LEFT", 380, 0)
+		spellLevelLabel:SetPoint("TOP", row, "TOP", 0, 0)
+		spellLevelLabel:SetPoint("BOTTOM", row, "BOTTOM", 0, 0)
+		spellLevelLabel:SetJustifyH("RIGHT")  -- keeps text anchored to this X, expands leftward
         spellLevelLabel:SetJustifyV("MIDDLE")
 
         local spellSublabel = spell:CreateFontString("$parentSubLabel", "OVERLAY", "SpellFont_Small")
